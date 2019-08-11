@@ -23,18 +23,29 @@ int main(int argc, char* args[])
 	short fps = 60;
 	short timePerFrame = 1000 / 60; // miliseconds
 
-	SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-	setWalking();
-	setTheatre();
-
+	SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	SDL_Rect walkingSprite[20];
 	SDL_Rect theatre[30];
 
-	theatre[0].x = 344;
-	theatre[0].y = 646;
-	theatre[0].w = 142;
-	theatre[0].h = 28;
+	theatre[0].x = 344;  theatre[1].x = 322;  theatre[2].x = 322;  theatre[3].x = 322;  theatre[4].x = 322;
+	theatre[0].y = 646;  theatre[1].y = 700;  theatre[2].y = 754;  theatre[3].y = 808;  theatre[4].y = 862;
+	theatre[0].w = 142;  theatre[1].w = 242;  theatre[2].w = 292;  theatre[3].w = 292;  theatre[4].w = 292;
+	theatre[0].h = 30;   theatre[1].h = 30;   theatre[2].h = 30;   theatre[3].h = 30;   theatre[4].h = 30;
 
-	SDL_Rect walkingSprite[20];
+	theatre[5].x = 322;  theatre[6].x = 322;  theatre[7].x = 324;  theatre[8].x = 372;  theatre[9].x = 372;
+	theatre[5].y = 916;  theatre[6].y = 970;  theatre[7].y = 1024; theatre[8].y = 1078; theatre[9].y = 1132;
+	theatre[5].w = 292;  theatre[6].w = 292;  theatre[7].w = 308;  theatre[8].w = 292;  theatre[9].w = 292;
+	theatre[5].h = 30;   theatre[6].h = 30;   theatre[7].h = 30;   theatre[8].h = 30;   theatre[9].h = 30;
+	
+	theatre[10].x = 704; theatre[11].x = 704; theatre[12].x = 704; theatre[13].x = 704; theatre[14].x = 704;
+	theatre[10].y = 646; theatre[11].y = 700; theatre[12].y = 754; theatre[13].y = 808; theatre[14].y = 862;
+	theatre[10].w = 392; theatre[11].w = 392; theatre[12].w = 392; theatre[13].w = 392; theatre[14].w = 392;
+	theatre[10].h = 30;  theatre[11].h = 30;  theatre[12].h = 30;  theatre[13].h = 30;  theatre[14].h = 30;
+
+	theatre[15].x = 704; theatre[16].x = 736; theatre[17].x = 754;
+	theatre[15].y = 916; theatre[16].y = 970; theatre[17].y = 1024;
+	theatre[15].w = 392; theatre[16].w = 328; theatre[17].w = 292;
+	theatre[15].h = 30;  theatre[16].h = 30;  theatre[17].h = 30;
 
 	for (int i = 0; i < 20; i++)
 	{
