@@ -62,7 +62,6 @@ public:
 	int getWidth() { return w; }
 	int getHeight() { return h; }
 
-private:
 	SDL_Texture* mTexture;
 
 	int w;
