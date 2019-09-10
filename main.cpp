@@ -5,7 +5,7 @@
 #include <string>
 #include "Sprites.h"
 
-void typewrite(int x, int y, std::string text, bool type_writer_effect);
+void typewrite(int x_center, int y, std::string text, bool type_writer_effect, float size = 1);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// START MAIN ////////////////////////////////////////////////
@@ -72,10 +72,10 @@ int main(int argc, char* args[])
 
 	for (int i = 0; i < 20; i++) // dimensions for walking sprite sheet (unfinished)
 	{
-		walkingSprite[i].x = 1 + ((i % 5) * 41);
-		walkingSprite[i].y = 1 + ((i / 5) * 41);
-		walkingSprite[i].w = 40;
-		walkingSprite[i].h = 40;
+		walkingSprite[i].x = (i % 5) * 36;
+		walkingSprite[i].y = (i / 5) * 83;
+		walkingSprite[i].w = 35;
+		walkingSprite[i].h = 82;
 	}
 
 	Sprite map; map.loadFromFile("Sprites/another.png");
@@ -290,16 +290,17 @@ bool AdamEncounter(SDL_Rect camera)
 		{
 			case 0:
 				dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
-				SDL_RenderPresent(renderer);
-				SDL_Delay(2000);
+				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", true, 2);
+				SDL_Delay(500);
 				act++;
 				break;
 			case 1:
 				dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
+				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
 				button1.render((SCREEN_WIDTH - button1.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-				typewrite((SCREEN_WIDTH - button1.getWidth()) / 2 + 10, SCREEN_HEIGHT / 2 + 10, "Hi Adam", false);
+				typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
 				button2.render((SCREEN_WIDTH - button2.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-				typewrite((SCREEN_WIDTH - button1.getWidth()) / 2 + 10, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
+				typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
 				
 				switch (select)
 				{
@@ -309,13 +310,14 @@ bool AdamEncounter(SDL_Rect camera)
 							map.render(0, 0, &camera);
 							Adam.render((SCREEN_WIDTH - Adam.getWidth()) / 2, 0, NULL);
 							dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
+							typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
 							if (i % 2)
 							{
 								button1.render((SCREEN_WIDTH - button1.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-								typewrite((SCREEN_WIDTH - button1.getWidth()) / 2 + 10, SCREEN_HEIGHT / 2 + 10, "Hi Adam", false);
+								typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
 							}
 							button2.render((SCREEN_WIDTH - button2.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-							typewrite((SCREEN_WIDTH - button1.getWidth()) / 2 + 10, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
+							typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
 							SDL_Delay(100);
 							SDL_RenderPresent(renderer);
 						}
@@ -328,13 +330,14 @@ bool AdamEncounter(SDL_Rect camera)
 							map.render(0, 0, &camera);
 							Adam.render((SCREEN_WIDTH - Adam.getWidth()) / 2, 0, NULL);
 							dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
+							typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
 							if (i % 2)
 							{
 								button2.render((SCREEN_WIDTH - button2.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-								typewrite((SCREEN_WIDTH - button1.getWidth()) / 2 + 10, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
+								typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
 							}
 							button1.render((SCREEN_WIDTH - button1.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-							typewrite((SCREEN_WIDTH - button1.getWidth()) / 2 + 10, SCREEN_HEIGHT / 2 + 10, "Hi Adam", false);
+							typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
 							SDL_Delay(100);
 							SDL_RenderPresent(renderer);
 						}
@@ -356,11 +359,7 @@ bool AdamEncounter(SDL_Rect camera)
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-////////////////////// TYPE_WRITER EFFECT FOR DIALOGUE? /////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void typewrite(int x, int y, std::string text, bool type_writer_effect)
+void typewrite(int x_center, int y, std::string text, bool type_writer_effect, float size)
 {
 	Sprite words; words.loadFromFile("Sprites/text.png");
 	SDL_Rect character[63];
@@ -382,7 +381,10 @@ void typewrite(int x, int y, std::string text, bool type_writer_effect)
 		else if (letter >= 97)
 			letter -= 71;
 
-		words.render(x + i * 8, y, &character[letter]);
+		if (size == 1)
+			words.render((x_center - (text.size() * 8) / 2) + i * 8, y, &character[letter]);
+		else
+			words.renderScaled((x_center - (text.size() * 8 * size) / 2) + i * 8 * size, y, size, &character[letter]);
 
 		if (type_writer_effect)
 		{

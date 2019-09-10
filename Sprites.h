@@ -59,6 +59,19 @@ public:
 		SDL_RenderCopy(renderer, mTexture, clip, &renderQuad);
 	}
 
+	void renderScaled(int x, int y, float scalar = 1, SDL_Rect* clip = NULL)
+	{
+		SDL_Rect renderQuad = {x, y, w * scalar, h * scalar};
+
+		if (clip != NULL)
+		{
+			renderQuad.w = clip->w * scalar;
+			renderQuad.h = clip->h * scalar;
+		}
+
+		SDL_RenderCopy(renderer, mTexture, clip, &renderQuad);
+	}
+
 	int getWidth() { return w; }
 	int getHeight() { return h; }
 
