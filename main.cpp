@@ -6,6 +6,8 @@
 #include "Sprites.h"
 
 void typewrite(int x_center, int y, std::string text, bool type_writer_effect, float size = 1);
+bool waitKey();
+bool AdamEncounter(SDL_Rect camera);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// START MAIN ////////////////////////////////////////////////
@@ -16,12 +18,6 @@ int main(int argc, char* args[])
 	window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-	bool quit = false;
-	bool left = false, right = false, up = false, down = false;
-	bool AdamEncounter(SDL_Rect camera);
-
-	int mouse_x, mouse_y;
 
 	enum characters
 	{
@@ -36,6 +32,13 @@ int main(int argc, char* args[])
 		down1, down2, down3, down4, down5
 	};
 
+	bool quit = false;
+	bool left = false, right = false, up = false, down = false;
+	bool characters[26];
+	for (int i = 0; i < 26; i++) { characters[i] = false; }
+
+	int mouse_x, mouse_y;
+
 	Uint32 startTime = 0;
 	Uint32 endTime = 0;
 	Uint32 delta = 0;
@@ -44,29 +47,57 @@ int main(int argc, char* args[])
 
 	SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Rect walkingSprite[20];
-	SDL_Rect theatre[30];
+	SDL_Rect theatre[40];
+	SDL_Rect backstage[3];
 
 	/*--------------------------------------- OBSTACLES IN THEATRE ----------------------------------------*/
 
-	theatre[0].x = 344;  theatre[1].x = 322;  theatre[2].x = 322;  theatre[3].x = 322;  theatre[4].x = 322;
-	theatre[0].y = 646;  theatre[1].y = 700;  theatre[2].y = 754;  theatre[3].y = 808;  theatre[4].y = 862;
-	theatre[0].w = 142;  theatre[1].w = 242;  theatre[2].w = 292;  theatre[3].w = 292;  theatre[4].w = 292;
-	theatre[0].h = 30;   theatre[1].h = 30;   theatre[2].h = 30;   theatre[3].h = 30;   theatre[4].h = 30;
+	theatre[0].x = 40;   theatre[1].x = 344;  theatre[2].x = 322;  theatre[3].x = 322;  theatre[4].x = 322;
+	theatre[0].y = 0;    theatre[1].y = 646;  theatre[2].y = 700;  theatre[3].y = 754;  theatre[4].y = 808;
+	theatre[0].w = 0;    theatre[1].w = 142;  theatre[2].w = 242;  theatre[3].w = 292;  theatre[4].w = 292;
+	theatre[0].h = 0;    theatre[1].h = 30;   theatre[2].h = 30;   theatre[3].h = 30;   theatre[4].h = 30;
 
-	theatre[5].x = 322;  theatre[6].x = 322;  theatre[7].x = 324;  theatre[8].x = 372;  theatre[9].x = 372;
-	theatre[5].y = 916;  theatre[6].y = 970;  theatre[7].y = 1024; theatre[8].y = 1078; theatre[9].y = 1132;
-	theatre[5].w = 292;  theatre[6].w = 292;  theatre[7].w = 308;  theatre[8].w = 292;  theatre[9].w = 292;
+	theatre[5].x = 322;  theatre[6].x = 322;  theatre[7].x = 322;  theatre[8].x = 324;  theatre[9].x = 372;
+	theatre[5].y = 862;  theatre[6].y = 916;  theatre[7].y = 970;  theatre[8].y = 1024; theatre[9].y = 1078;
+	theatre[5].w = 292;  theatre[6].w = 292;  theatre[7].w = 292;  theatre[8].w = 308;  theatre[9].w = 292;
 	theatre[5].h = 30;   theatre[6].h = 30;   theatre[7].h = 30;   theatre[8].h = 30;   theatre[9].h = 30;
 	
-	theatre[10].x = 704; theatre[11].x = 704; theatre[12].x = 704; theatre[13].x = 704; theatre[14].x = 704;
-	theatre[10].y = 646; theatre[11].y = 700; theatre[12].y = 754; theatre[13].y = 808; theatre[14].y = 862;
-	theatre[10].w = 392; theatre[11].w = 392; theatre[12].w = 392; theatre[13].w = 392; theatre[14].w = 392;
+	theatre[10].x = 372; theatre[11].x = 704; theatre[12].x = 704; theatre[13].x = 704; theatre[14].x = 704;
+	theatre[10].y = 1132;theatre[11].y = 646; theatre[12].y = 700; theatre[13].y = 754; theatre[14].y = 808;
+	theatre[10].w = 292; theatre[11].w = 392; theatre[12].w = 392; theatre[13].w = 392; theatre[14].w = 392;
 	theatre[10].h = 30;  theatre[11].h = 30;  theatre[12].h = 30;  theatre[13].h = 30;  theatre[14].h = 30;
 
-	theatre[15].x = 704; theatre[16].x = 736; theatre[17].x = 754;
-	theatre[15].y = 916; theatre[16].y = 970; theatre[17].y = 1024;
-	theatre[15].w = 392; theatre[16].w = 328; theatre[17].w = 292;
-	theatre[15].h = 30;  theatre[16].h = 30;  theatre[17].h = 30;
+	theatre[15].x = 704; theatre[16].x = 704; theatre[17].x = 736; theatre[18].x = 754; theatre[19].x = 754;
+	theatre[15].y = 862; theatre[16].y = 916; theatre[17].y = 970; theatre[18].y = 1024;theatre[19].y = 1078;
+	theatre[15].w = 392; theatre[16].w = 392; theatre[17].w = 328; theatre[18].w = 292; theatre[19].w = 292;
+	theatre[15].h = 30;  theatre[16].h = 30;  theatre[17].h = 30;  theatre[18].h = 30;  theatre[19].h = 30;
+
+	theatre[20].x = 754; theatre[21].x = 1312;theatre[22].x = 1236;theatre[23].x = 1186;theatre[24].x = 1186;
+	theatre[20].y = 1132;theatre[21].y = 646; theatre[22].y = 700; theatre[23].y = 754; theatre[24].y = 808;
+	theatre[20].w = 292; theatre[21].w = 143; theatre[22].w = 243; theatre[23].w = 292; theatre[24].w = 292;
+	theatre[20].h = 30;  theatre[21].h = 30;  theatre[22].h = 30;  theatre[23].h = 30;  theatre[24].h = 30;
+
+	theatre[25].x = 1186;theatre[26].x = 1186;theatre[27].x = 1186;theatre[28].x = 1166;theatre[29].x = 1136;
+	theatre[25].y = 862; theatre[26].y = 916; theatre[27].y = 970; theatre[28].y = 1024;theatre[29].y = 1078;
+	theatre[25].w = 292; theatre[26].w = 292; theatre[27].w = 292; theatre[28].w = 309; theatre[29].w = 292;
+	theatre[25].h = 30;  theatre[26].h = 30;  theatre[27].h = 30;  theatre[28].h = 30;  theatre[29].h = 30;
+
+	theatre[30].x = 1136;theatre[31].x = 0;   theatre[32].x = 1550;theatre[33].x = 0;   theatre[34].x = 724;
+	theatre[30].y = 1132;theatre[31].y = 300; theatre[32].y = 300; theatre[33].y = 1295;theatre[34].y = 419;
+	theatre[30].w = 292; theatre[31].w = 250; theatre[32].w = 250; theatre[33].w = 1800;theatre[34].w = 353;
+	theatre[30].h = 30;  theatre[31].h = 1000;theatre[32].h = 1000;theatre[33].h = 5;   theatre[34].h = 58;
+
+	theatre[35].x = 24;  theatre[36].x = 1537;theatre[37].x = 1537;theatre[38].x = 24;  theatre[39].x = 0;
+	theatre[35].y = 178; theatre[36].y = 178; theatre[37].y = 244; theatre[38].y = 244; theatre[39].y = 0;
+	theatre[35].w = 238; theatre[36].w = 238; theatre[37].w = 238; theatre[38].w = 238; theatre[39].w = 0;
+	theatre[35].h = 1;   theatre[36].h = 1;   theatre[37].h = 1;   theatre[38].h = 1;   theatre[39].h = 0;
+
+	/*--------------------------------------- OBSTACLES IN BACKSTAGE ----------------------------------------*/
+
+	backstage[0].x = 3;    backstage[1].x = 0;    backstage[2].x = 0;
+	backstage[0].y = 0;    backstage[1].y = 300;  backstage[2].y = 0;
+	backstage[0].w = 0;    backstage[1].w = 1825; backstage[2].w = 0;
+	backstage[0].h = 0;    backstage[1].h = 1300; backstage[2].h = 0;
 
 	/*--------------------------------------------------------------------------------------------------------*/
 
@@ -78,14 +109,17 @@ int main(int argc, char* args[])
 		walkingSprite[i].h = 82;
 	}
 
-	Sprite map; map.loadFromFile("Sprites/another.png");
+	SDL_Rect* room = theatre;
+
+	Sprite sTheatre; sTheatre.loadFromFile("Sprites/another.png");
+	Sprite sBackstage; sBackstage.loadFromFile("Sprites/backstage.png");
 	Sprite exclaim; exclaim.loadFromFile("Sprites/exclaim.png");
-	bool characters[26];
-	for (int i = 0; i < 26; i++) { characters[i] = false; }
+	Sprite curtain; curtain.loadFromFile("Sprites/curtain.png");
+	Sprite curtain2; curtain2.loadFromFile("Sprites/curtain.png");
 	Actor nolan; nolan.loadFromFile("Sprites/walking.png");
 
 	nolan.x = 1350;
-	nolan.y = 1225;
+	nolan.y = 1200;
 	nolan.anim = positions::left1;
 
 	SDL_Event event;
@@ -117,6 +151,13 @@ int main(int argc, char* args[])
 				case SDLK_SPACE:
 					std::cout << "nolan: " << nolan.x << "," << nolan.y << std::endl <<
 								 "camera: " << camera.x << "," << camera.y << std::endl;
+
+					if (nolan.x + 30 > 170 && nolan.x < 220 &&
+						nolan.y >= 0 && nolan.y < 75)
+					{
+						room = backstage;
+						LEVEL_WIDTH = 2200;
+					}
 					break;
 				}
 			}
@@ -152,10 +193,10 @@ int main(int argc, char* args[])
 
 		SDL_GetMouseState(&mouse_x, &mouse_y);
 
-		if (left) { nolan.anim = positions::left1 + (frame / 15); nolan.move(-1, 0, theatre); }
-		if (right) { nolan.anim = positions::right1 + (frame / 15); nolan.move(1, 0, theatre); }
-		if (up) { nolan.anim = positions::up1 + (frame / 15); nolan.move(0, -1, theatre); }
-		if (down) { nolan.anim = positions::down1 + (frame / 15); nolan.move(0, 1, theatre); }
+		if (left) { nolan.anim = positions::left1 + (frame / 12); nolan.move(-1, 0, room, room[0].x); }
+		if (right) { nolan.anim = positions::right1 + (frame / 12); nolan.move(1, 0, room, room[0].x); }
+		if (up) { nolan.anim = positions::up1 + (frame / 12); nolan.move(0, -1, room, room[0].x); }
+		if (down) { nolan.anim = positions::down1 + (frame / 12); nolan.move(0, 1, room, room[0].x); }
 
 		if (left || right || up || down)
 		{
@@ -178,32 +219,68 @@ int main(int argc, char* args[])
 
 		/*--------------------------------------------------------------*/
 
-		map.render(0, 0, &camera);
-
-		nolan.render(nolan.x - camera.x, nolan.y - camera.y, &walkingSprite[nolan.anim]);
-
-		if (nolan.x < 1245 && nolan.y > 1000 && characters[characters::Adam] == false)
+		if (room == theatre)
 		{
-			characters[characters::Adam] = true;
-			left = false;
-			right = false;
-			up = false;
-			down = false;
+			nolan.layer = 0;
 
-			for (int i = 0; i < 10; i++)
-			{
-				map.render(0, 0, &camera);
+			curtain2.underneath_again = curtain2.underneath;
+			if ((nolan.x < 24 + curtain.getWidth() && nolan.x + nolan.CHAR_WIDTH > 24 &&
+				 nolan.y + 70 < 244 && nolan.y + 70 > 36) ||
+				(nolan.x < 1537 + curtain.getWidth() && nolan.x + nolan.CHAR_WIDTH > 1537 &&
+				 nolan.y + 70 < 244 && nolan.y + 70 > 36))
+			{ curtain2.underneath = true; curtain2.swapAlpha(); nolan.layer = 1; }
+			else { curtain2.underneath = false; curtain2.swapAlpha(); }
+
+			curtain.underneath_again = curtain.underneath; // 24, 36
+			if ((nolan.x < 24 + curtain.getWidth() && nolan.x + nolan.CHAR_WIDTH > 24 &&
+				 nolan.y + 70 < 36 + curtain.getHeight() && nolan.y + 70 > 36) ||
+				(nolan.x < 1537 + curtain.getWidth() && nolan.x + nolan.CHAR_WIDTH > 1537 &&
+				 nolan.y + 70 < 36 + curtain.getHeight() && nolan.y + 70 > 36))
+			{ curtain.underneath = true; curtain.swapAlpha(); nolan.layer = 2; }
+			else
+			{ curtain.underneath = false; curtain.swapAlpha(); }
+
+			sTheatre.render(0, 0, &camera);
+			if (nolan.layer == 2)
 				nolan.render(nolan.x - camera.x, nolan.y - camera.y, &walkingSprite[nolan.anim]);
-				if (i % 2 == 0) {exclaim.render(1260 - camera.x, 1100 - camera.y, NULL); std::cout << "yee haw";}
+			curtain.render(24 - camera.x, 36 - camera.y, NULL);
+			curtain.render(1537 - camera.x, 36 - camera.y, NULL);
+			if (nolan.layer == 1)
+				nolan.render(nolan.x - camera.x, nolan.y - camera.y, &walkingSprite[nolan.anim]);
+			curtain2.render(24 - camera.x, 102 - camera.y, NULL);
+			curtain2.render(1537 - camera.x, 102 - camera.y, NULL);
+			if (nolan.layer == 0)
+				nolan.render(nolan.x - camera.x, nolan.y - camera.y, &walkingSprite[nolan.anim]);
 
-				SDL_RenderPresent(renderer);
+			if ((nolan.x < 1245 || nolan.y < 1100) && !characters[characters::Adam])
+			{
+				characters[characters::Adam] = true;
+				left = false;
+				right = false;
+				up = false;
+				down = false;
 
-				SDL_Delay(100);
+				for (int i = 0; i < 10; i++)
+				{
+					sTheatre.render(0, 0, &camera);
+					nolan.render(nolan.x - camera.x, nolan.y - camera.y, &walkingSprite[nolan.anim]);
+					if (i % 2 == 0) { exclaim.render(1260 - camera.x, 1100 - camera.y, NULL); std::cout << "yee haw"; }
+
+					SDL_RenderPresent(renderer);
+
+					SDL_Delay(100);
+				}
+
+
+				if (AdamEncounter(camera) == false)
+					quit = true;
 			}
+		}
 
-
-			if (AdamEncounter(camera) == false)
-				quit = true;
+		else if (room == backstage)
+		{
+			sBackstage.render(0, 0, &camera);
+			nolan.render(nolan.x - camera.x, nolan.y - camera.y, &walkingSprite[nolan.anim]);
 		}
 
 		/*--------------------------------------------------------------*/
@@ -236,10 +313,10 @@ bool AdamEncounter(SDL_Rect camera)
 	Sprite map; map.loadFromFile("Sprites/another.png");
 	Sprite Adam; Adam.loadFromFile("Sprites/Characters/Adam.png");
 	Sprite dialogue; dialogue.loadFromFile("Sprites/dialogue.png");
-	Sprite button1; button1.loadFromFile("Sprites/button.png");
-	Sprite button2; button2.loadFromFile("Sprites/button.png");
+	Sprite button; button.loadFromFile("Sprites/button.png");
 
-	int act = 0, select = 0, mouse_x, mouse_y;
+	int act = 0, select = 0, count = 0, mouse_x, mouse_y;
+	bool button1 = true, button2 = true;
 
 	while (true)
 	{
@@ -259,14 +336,13 @@ bool AdamEncounter(SDL_Rect camera)
 						break;
 
 					case SDLK_SPACE:
-						//act++;
 						break;
 				}
 			}
 			else if (event.type == SDL_MOUSEBUTTONDOWN && act > 0)
 			{
 				if (mouse_y >= SCREEN_HEIGHT / 2 && mouse_y <= SCREEN_HEIGHT / 2 + 46 &&
-					mouse_x >= (SCREEN_WIDTH - button1.getWidth()) / 2 && mouse_x <= (SCREEN_WIDTH - button1.getWidth()) / 2 + 225)
+					mouse_x >= (SCREEN_WIDTH - button.getWidth()) / 2 && mouse_x <= (SCREEN_WIDTH - button.getWidth()) / 2 + 225)
 				{
 					select = 1;
 					std::cout << "leftover_salad";
@@ -285,70 +361,85 @@ bool AdamEncounter(SDL_Rect camera)
 
 		map.render(0, 0, &camera);
 		Adam.render((SCREEN_WIDTH - Adam.getWidth()) / 2, 0, NULL);
+		dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight() - 18, NULL);
+		typewrite(170, Adam.getHeight() - 13, "Adam", false);
 
 		switch (act)
 		{
 			case 0:
-				dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
 				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", true, 2);
-				SDL_Delay(500);
-				act++;
-				break;
+				SDL_Delay(500); act++; break;
 			case 1:
-				dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
 				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
-				button1.render((SCREEN_WIDTH - button1.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-				typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
-				button2.render((SCREEN_WIDTH - button2.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-				typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
-				
+
+				if (button1)
+				{
+					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
+					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
+				}
+				if (button2)
+				{
+					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
+					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
+				}
+
+				SDL_RenderPresent(renderer);
+
 				switch (select)
 				{
 					case 1:
-						for (int i = 0; i < 8; i++)
-						{
-							map.render(0, 0, &camera);
-							Adam.render((SCREEN_WIDTH - Adam.getWidth()) / 2, 0, NULL);
-							dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
-							typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
-							if (i % 2)
-							{
-								button1.render((SCREEN_WIDTH - button1.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-								typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
-							}
-							button2.render((SCREEN_WIDTH - button2.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-							typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
-							SDL_Delay(100);
-							SDL_RenderPresent(renderer);
-						}
-						select = 0;
-						act++;
-						break;
+						if (button1) { button1 = false; }
+						else { button1 = true; }
+						if (count > 8) {
+							select = 0; act++; count = 0;
+						} count++; SDL_Delay(100); break;
 					case 2:
-						for (int i = 0; i < 8; i++)
-						{
-							map.render(0, 0, &camera);
-							Adam.render((SCREEN_WIDTH - Adam.getWidth()) / 2, 0, NULL);
-							dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight(), NULL);
-							typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
-							if (i % 2)
-							{
-								button2.render((SCREEN_WIDTH - button2.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-								typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
-							}
-							button1.render((SCREEN_WIDTH - button1.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-							typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
-							SDL_Delay(100);
-							SDL_RenderPresent(renderer);
-						}
-						select = 0;
-						act++;
-						break;
+						if (button2) { button2 = false; }
+						else { button2 = true; }
+						if (count > 8) {
+							select = 0; act++; count = 0;
+						} count++; SDL_Delay(100); break;
+				} break;
+			case 2:
+				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Wowie thats so coool", true, 2);
+				SDL_RenderPresent(renderer);
+				if (waitKey() == false) { return false; } act++; break;
+			case 3:
+				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "yeet feet deleet", true, 2);
+				SDL_Delay(500); act++; break;
+			case 4:
+				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "yeet feet deleet", false, 2);
+
+				if (button1)
+				{
+					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
+					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "tf Adam", false);
+				}
+				if (button2)
+				{
+					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
+					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "reeeeeee", false);
 				}
 
-				break;
-			case 2:
-				break;
+				switch (select)
+				{
+				case 1:
+					if (button1) { button1 = false; }
+					else { button1 = true; }
+					if (count > 8) {
+						select = 0; act++; count = 0;
+					} count++; SDL_Delay(100); break;
+				case 2:
+					if (button2) { button2 = false; }
+					else { button2 = true; }
+					if (count > 8) {
+						select = 0; act++; count = 0;
+					} count++; SDL_Delay(100); break;
+				} break;
+			case 5:
+				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "y y you too", true, 2);
+				SDL_Delay(500);
+				act++;
 			default:
 				break;
 		}
@@ -389,7 +480,30 @@ void typewrite(int x_center, int y, std::string text, bool type_writer_effect, f
 		if (type_writer_effect)
 		{
 			SDL_RenderPresent(renderer);
-			SDL_Delay(100);
+			SDL_Delay(75);
+		}
+	}
+}
+
+bool waitKey()
+{
+	SDL_Event event;
+
+	while (true)
+	{
+		while (SDL_PollEvent(&event) != 0)
+		{
+			if (event.type == SDL_QUIT)
+				return false;
+			else if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_SPACE:
+					return true;
+					break;
+				}
+			}
 		}
 	}
 }

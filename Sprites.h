@@ -2,8 +2,8 @@
 
 const int SCREEN_WIDTH = 900;
 const int SCREEN_HEIGHT = 650;
-const int LEVEL_WIDTH = 1800;
-const int LEVEL_HEIGHT = 1300;
+int LEVEL_WIDTH = 1800;
+int LEVEL_HEIGHT = 1300;
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -33,6 +33,22 @@ public:
 
 		mTexture = newTexture;
 		return mTexture != NULL;
+	}
+
+	void setAlpha(Uint8 alpha)
+	{
+		SDL_SetTextureAlphaMod(mTexture, alpha);
+		if (alpha == 255) { beta = 1; }
+		else { beta = 0; }
+	}
+
+	void swapAlpha()
+	{
+		if (underneath != underneath_again)
+		{
+			if (beta) { setAlpha(127); }
+			else { setAlpha(255); }
+		}
 	}
 
 	void free()
@@ -77,21 +93,18 @@ public:
 
 	SDL_Texture* mTexture;
 
-	int w;
-	int h;
+	int w, h;
+	bool beta = 1, underneath = false, underneath_again = false;
 };
 
 class Actor : public Sprite
 {
 public:
-	int x = 0;
-	int y = 0;
-	const int CHAR_WIDTH = 40;
-	const int CHAR_HEIGHT = 40;
+	int x = 0, y = 0, anim = 0, layer = 0;
+	const int CHAR_WIDTH = 35;
+	const int CHAR_HEIGHT = 82;
 
-	int anim = 0;
-
-	void move(int move_x, int move_y, SDL_Rect* room = NULL)
+	void move(int move_x, int move_y, SDL_Rect* room = NULL, int size = 0)
 	{
 		x += move_x;
 
@@ -101,9 +114,10 @@ public:
 
 		if ((y < 0) || (y + CHAR_HEIGHT > LEVEL_HEIGHT)) { y -= move_y; }
 
-		for (int i = 0; i < 30; i++)
+		for (int i = 0; i < size; i++)
 		{
-			if (x + CHAR_WIDTH > room[i].x && x < room[i].x + room[i].w && y + CHAR_HEIGHT > room[i].y && y + (CHAR_HEIGHT / 2) < room[i].y + room[i].h)
+			if (x + CHAR_WIDTH > room[i].x && x < room[i].x + room[i].w
+				&& y + CHAR_HEIGHT > room[i].y && y + 70 < room[i].y + room[i].h)
 			{
 				x -= move_x; y -= move_y;
 			}
