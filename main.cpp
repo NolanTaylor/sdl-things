@@ -8,6 +8,7 @@
 void typewrite(int x_center, int y, std::string text, bool type_writer_effect, float size = 1);
 bool waitKey();
 bool AdamEncounter(SDL_Rect camera);
+bool KatyEncounter(SDL_Rect camera);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// START MAIN ////////////////////////////////////////////////
@@ -21,7 +22,7 @@ int main(int argc, char* args[])
 
 	enum characters
 	{
-		Adam
+		Adam, Katy
 	};
 
 	enum positions
@@ -158,6 +159,16 @@ int main(int argc, char* args[])
 						room = backstage;
 						LEVEL_WIDTH = 2200;
 					}
+					else if (nolan.x + nolan.CHAR_WIDTH > 833 && nolan.x < 895 &&
+							 nolan.y + 70 > 1056 && nolan.y + 70 < 1077 && !characters[characters::Katy])
+					{
+						characters[characters::Katy] = true;
+
+						if (!KatyEncounter(camera))
+						{
+							quit = true;
+						}
+					}
 					break;
 				}
 			}
@@ -272,7 +283,7 @@ int main(int argc, char* args[])
 				}
 
 
-				if (AdamEncounter(camera) == false)
+				if (!AdamEncounter(camera))
 					quit = true;
 			}
 		}
@@ -315,7 +326,10 @@ bool AdamEncounter(SDL_Rect camera)
 	Sprite dialogue; dialogue.loadFromFile("Sprites/dialogue.png");
 	Sprite button; button.loadFromFile("Sprites/button.png");
 
-	int act = 0, select = 0, count = 0, mouse_x, mouse_y;
+	int act = 0, select = 0, count = 0, 
+		x = SCREEN_WIDTH / 2,
+		y = SCREEN_HEIGHT - dialogue.getHeight() + 40,
+		mouse_x, mouse_y;
 	bool button1 = true, button2 = true;
 
 	while (true)
@@ -361,64 +375,62 @@ bool AdamEncounter(SDL_Rect camera)
 
 		map.render(0, 0, &camera);
 		Adam.render((SCREEN_WIDTH - Adam.getWidth()) / 2, 0, NULL);
-		dialogue.render((SCREEN_WIDTH - Adam.getWidth()) / 2, Adam.getHeight() - 18, NULL);
+		dialogue.render((SCREEN_WIDTH - dialogue.getWidth()) / 2, SCREEN_HEIGHT - dialogue.getHeight() - 1, NULL);
 		typewrite(170, Adam.getHeight() - 13, "Adam", false);
 
 		switch (act)
 		{
 			case 0:
-				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", true, 2);
+				typewrite(x, y, "Hi Im Adam I drive manual", true, 2);
 				SDL_Delay(500); act++; break;
 			case 1:
-				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Hi Im Adam I drive manual", false, 2);
+				typewrite(x, y, "Hi Im Adam I drive manual", false, 2);
 
 				if (button1)
 				{
 					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
+					typewrite(x, SCREEN_HEIGHT / 2 + 15, "Hi Adam", false);
 				}
 				if (button2)
 				{
 					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
+					typewrite(x, SCREEN_HEIGHT / 2 + 80, "fffthg switgnsdsjjsjj", false);
 				}
 
 				SDL_RenderPresent(renderer);
 
 				switch (select)
 				{
-					case 1:
-						if (button1) { button1 = false; }
-						else { button1 = true; }
-						if (count > 8) {
-							select = 0; act++; count = 0;
-						} count++; SDL_Delay(100); break;
-					case 2:
-						if (button2) { button2 = false; }
-						else { button2 = true; }
-						if (count > 8) {
-							select = 0; act++; count = 0;
-						} count++; SDL_Delay(100); break;
+				case 0:
+					break;
+				default:
+					if (button2) { button2 = false; }
+					else { button2 = true; }
+					if (count > 8) {
+						select = 0; act++; count = 0;
+					} count++; SDL_Delay(100); break;
 				} break;
 			case 2:
-				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "Wowie thats so coool", true, 2);
+				typewrite(x, y, "Wowie me too", true, 2);
 				SDL_RenderPresent(renderer);
-				if (waitKey() == false) { return false; } act++; break;
+				if (!waitKey()) { return false; } act++; break;
 			case 3:
-				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "yeet feet deleet", true, 2);
+				typewrite(x, y, "adwuhrjfdauiabhdsluh", true, 2);
+				typewrite(x, y + 30, "djsioweujkha oiadnjj", true, 2);
 				SDL_Delay(500); act++; break;
 			case 4:
-				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "yeet feet deleet", false, 2);
+				typewrite(x, y, "adwuhrjfdauiabhdsluh", false, 2);
+				typewrite(x, y + 30, "djsioweujkha oiadnjj", false, 2);
 
 				if (button1)
 				{
 					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
-					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "tf Adam", false);
+					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, "umm m m m", false);
 				}
 				if (button2)
 				{
 					button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
-					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "reeeeeee", false);
+					typewrite(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80, "sorry i i", false);
 				}
 
 				switch (select)
@@ -437,11 +449,178 @@ bool AdamEncounter(SDL_Rect camera)
 					} count++; SDL_Delay(100); break;
 				} break;
 			case 5:
-				typewrite(SCREEN_WIDTH / 2, Adam.getHeight() + 20, "y y you too", true, 2);
+				typewrite(x, y, "Yay friends", true, 2);
 				SDL_Delay(500);
-				act++;
+				act++; break;
 			default:
 				break;
+		}
+
+		/*--------------------------------------------------------------*/
+
+		SDL_RenderPresent(renderer);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// START KATY ENCOUNTER 1 /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool KatyEncounter(SDL_Rect camera)
+{
+	SDL_Event event;
+
+	Sprite map; map.loadFromFile("Sprites/another.png");
+	Sprite Katy; Katy.loadFromFile("Sprites/Characters/Katy.png");
+	Sprite Sophia; Sophia.loadFromFile("Sprites/Characters/Sophia.png");
+	Sprite dialogue; dialogue.loadFromFile("Sprites/dialogue.png");
+	Sprite button; button.loadFromFile("Sprites/button.png");
+
+	int act = 0, select = 0, count = 0,
+		x = SCREEN_WIDTH / 2,
+		y = SCREEN_HEIGHT - dialogue.getHeight() + 40,
+		mouse_x, mouse_y;
+	bool button1 = true, button2 = true;
+	std::string speaker = "Katy";
+
+	while (true)
+	{
+		SDL_GetMouseState(&mouse_x, &mouse_y);
+		while (SDL_PollEvent(&event) != 0)
+		{
+			if (event.type == SDL_QUIT)
+				return false;
+			else if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_q:
+					return true;
+					break;
+				}
+			}
+			else if (event.type == SDL_MOUSEBUTTONDOWN && act > 0)
+			{
+				if (mouse_y >= SCREEN_HEIGHT / 2 && mouse_y <= SCREEN_HEIGHT / 2 + 46 &&
+					mouse_x >= (SCREEN_WIDTH - button.getWidth()) / 2 && mouse_x <= (SCREEN_WIDTH - button.getWidth()) / 2 + 225)
+					select = 1;
+				else if (mouse_y >= SCREEN_HEIGHT / 2 + 70)
+					select = 2;
+			}
+		}
+
+		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(renderer);
+
+		/*--------------------------------------------------------------*/
+
+		map.render(0, 0, &camera);
+		
+		if (act >= 9)
+		{
+			Katy.render((SCREEN_WIDTH - Katy.getWidth()) / 4, 0, NULL);
+			Sophia.render(3 * (SCREEN_WIDTH - Sophia.getWidth()) / 4, 0, NULL);
+		}
+		else
+			Katy.render((SCREEN_WIDTH - Katy.getWidth()) / 2, 0, NULL);
+
+		dialogue.render((SCREEN_WIDTH - dialogue.getWidth()) / 2, SCREEN_HEIGHT - dialogue.getHeight(), NULL);
+		typewrite(170, SCREEN_HEIGHT - dialogue.getHeight() + 4, speaker, false);
+
+		switch (act)
+		{
+		case 0:
+			typewrite(x, y, "yee haw its Katy", true, 2);
+			SDL_Delay(500); act++; break;
+		case 1:
+			typewrite(x, y, "yee haw its Katy", false, 2);
+
+			if (button1)
+			{
+				button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
+				typewrite(x, SCREEN_HEIGHT / 2 + 15, "YEE HAW ITS KATY", false);
+			}
+			if (button2)
+			{
+				button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
+				typewrite(x, SCREEN_HEIGHT / 2 + 85, "yee haw its Katy", false);
+			}
+
+			SDL_RenderPresent(renderer);
+
+			switch (select)
+			{
+			case 1:
+				if (button1) { button1 = false; }
+				else { button1 = true; }
+				if (count > 8) {
+					select = 0; act++; count = 0;
+				} count++; SDL_Delay(100); break;
+			case 2:
+				if (button2) { button2 = false; }
+				else { button2 = true; }
+				if (count > 8) {
+					select = 0; act = 7; count = 0;
+				} count++; SDL_Delay(100); break;
+			} break;
+		case 2:
+			typewrite(x, y, "aww cmon you can do better than that", true, 2);
+			if (!waitKey())
+				return false;
+			act++; break;
+		case 3:
+			typewrite(x, y, "I said YEE HAW ITS KATY", true, 2);
+			SDL_Delay(500); act++; break;
+		case 4:
+			typewrite(x, y, "I said YEE HAW ITS KATY", false, 2);
+			if (!waitKey())
+				return false;
+			act++; break;
+		case 5:
+			typewrite(x, y + 10, "YEE HAW ITS KATY", true, 4);
+			act++; break;
+		case 6:
+			typewrite(x, y + 10, "YEE HAW ITS KATY", false, 4);
+
+			button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2, NULL);
+			typewrite(x, SCREEN_HEIGHT / 2 + 15, "YEE HAW", false, 2);
+
+			button.render((SCREEN_WIDTH - button.getWidth()) / 2, SCREEN_HEIGHT / 2 + 70, NULL);
+			typewrite(x, SCREEN_HEIGHT / 2 + 80, "ITS KATY", false, 2);
+
+			SDL_RenderPresent(renderer);
+
+			switch (select)
+			{
+			case 0:
+				break;
+			default:
+				act = 8; break;
+			}
+
+			break;
+		case 7:
+			typewrite(x, y, "weak", true, 2);
+			if (!waitKey())
+				return false;
+			act = 3; break;
+		case 8:
+			typewrite(x, SCREEN_HEIGHT / 2 + 80, "YEEEEEEE HAAAAAW", false, 6);
+			SDL_RenderPresent(renderer);
+			SDL_Delay(2000); act++; speaker = "Sophia"; break;
+		case 9:
+			typewrite(x, y, "um", true, 2);
+			if (!waitKey())
+				return false;
+			act++; break;
+		case 10:
+			typewrite(x, y, "wtf katy", true, 2);
+			SDL_Delay(500); act++; break;
+		case 11:
+			typewrite(x, y, "wtf katy", false, 2);
+			break;
+		default:
+			break;
 		}
 
 		/*--------------------------------------------------------------*/
@@ -465,7 +644,7 @@ void typewrite(int x_center, int y, std::string text, bool type_writer_effect, f
 
 	for (std::string::size_type i = 0; i < text.size(); i++)
 	{
-		int letter = static_cast<int>(text[i]);
+		int letter = static_cast<int>(text[i]); // -er mage
 
 		if (letter <= 90)
 			letter -= 65;
@@ -480,7 +659,7 @@ void typewrite(int x_center, int y, std::string text, bool type_writer_effect, f
 		if (type_writer_effect)
 		{
 			SDL_RenderPresent(renderer);
-			SDL_Delay(75);
+			SDL_Delay(1000 / text.size());
 		}
 	}
 }
